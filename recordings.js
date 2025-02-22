@@ -89,9 +89,10 @@ recordingsRouter.post('/voice/recordings/:userId', upload.single('audio'), async
 
 
 
-recordingsRouter.get('/', async (req, res) => {
+recordingsRouter.get('/user/:userId', async (req, res) => {
     try {
         // Join the recordings table with the users table to get the user details
+        const userId = req.params.userId;
         const query = `
             SELECT 
                 r.id, 
@@ -100,16 +101,13 @@ recordingsRouter.get('/', async (req, res) => {
                 r.duration, 
                 r.size, 
                 r.mimeType, 
-                r.createdAt, 
-                u.full_name, 
-                u.phone, 
-                u.email
+                r.createdAt
             FROM recordings r
-            LEFT JOIN users u ON r.user_id = u.user_id
+            WHERE r.user_id = ?
             ORDER BY r.createdAt DESC;
         `;
 
-        const [recordings] = await db.query(query);
+        const [recordings] = await db.query(query, [userId]);
 
         const html = `
         <html>
