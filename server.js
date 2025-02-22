@@ -5,6 +5,7 @@ const cors = require("cors");
 const admin = require('./adminRoutes')
 const login = require('./loginRoute')
 const employee = require('./employeeroutes')
+const sos = require('./sosRoutes')
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(bodyParser.json());
 app.use('/api', employee);
 app.use('/admin',admin)
 app.use('/login',login)
+app.use('/sos',sos)
 
 
 app.get("/", (req, res) => {

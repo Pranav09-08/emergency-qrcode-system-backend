@@ -42,4 +42,5 @@ router.get("/employees/:qr_code", async (req, res) => {
     }
 });
 
+
 module.exports = router;  // ✅ Ensure this exports the router
