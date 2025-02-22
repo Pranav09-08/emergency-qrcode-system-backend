@@ -6,6 +6,9 @@ const admin = require('./adminRoutes')
 const login = require('./loginRoute')
 const employee = require('./employeeroutes')
 const sos = require('./sosRoutes')
+const RecordingsRouter = require('./recordings')
+const path = require('path')
+const fs = require('fs')
 
 const app = express();
 
@@ -18,6 +21,17 @@ app.use('/api', employee);
 app.use('/admin',admin)
 app.use('/login',login)
 app.use('/sos',sos)
+app.use('/recordings',RecordingsRouter)
+
+// Static File Serving with Proper MIME Types
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), (req, res, next) => {
+  const file = path.join(__dirname, 'uploads', req.path);
+  const mimeType = mime.lookup(file);
+  
+  if (mimeType) res.setHeader('Content-Type', mimeType);
+  res.setHeader('Accept-Ranges', 'bytes');
+  next();
+}));
 
 
 app.get("/", (req, res) => {
