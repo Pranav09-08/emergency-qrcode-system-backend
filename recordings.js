@@ -61,7 +61,7 @@ recordingsRouter.post('/voice/recordings/:userId', upload.single('audio'), async
         const { filename, path: filePath, size } = req.file;
         const duration = req.body.duration || 0;
         const mimeType = mime.lookup(filename) || req.file.mimetype;
-        const userId = req.params.userId; // Get user_id from URL parameters
+        const userId = req.body.user_id; // Get user_id from URL parameters
 
         if (!userId) return res.status(400).json({ error: 'User ID is required' });
 
