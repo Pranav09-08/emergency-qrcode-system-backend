@@ -9,6 +9,7 @@ const sos = require('./sosRoutes')
 const RecordingsRouter = require('./recordings')
 const path = require('path')
 const fs = require('fs')
+const incident = require('./incidentLog')
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use('/admin',admin)
 app.use('/login',login)
 app.use('/sos',sos)
 app.use('/recordings',RecordingsRouter)
+app.use('/incident-log',incident);
 
 // Static File Serving with Proper MIME Types
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), (req, res, next) => {
