@@ -48,9 +48,6 @@ const upload = multer({
 });
 
 
-db.query(createTableQuery)
-    .then(() => console.log("Recordings table is ready"))
-    .catch(err => console.error('Table creation error:', err));
 
 // Upload a recording
 // Change the route to include user_id as a parameter
