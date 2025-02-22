@@ -5,7 +5,7 @@ const router = express.Router();
 const db = require('./config/db'); // Assuming you have your database connection in db.js
 
 // POST: Register a new admin
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 
 router.post('/register', async (req, res) => {
