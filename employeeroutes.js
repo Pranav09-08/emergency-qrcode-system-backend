@@ -1,0 +1,44 @@
+const express = require("express");
+const router = express.Router();
+const db = require("./config/db");
+
+// Register new employee
+router.post("/employees", async (req, res) => {
+    const { full_name, email, phone, blood_group, emergency_contact_name, emergency_contact_phone, medical_conditions, allergies, qr_code } = req.body;
+
+    if (!full_name || !email || !phone || !qr_code) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    try {
+        const [result] = await db.query(
+            "INSERT INTO Users (full_name, email, phone, blood_group, emergency_contact_name, emergency_contact_phone, medical_conditions, allergies, qr_code) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [full_name, email, phone, blood_group, emergency_contact_name, emergency_contact_phone, medical_conditions, allergies, qr_code]
+        );
+
+        res.status(201).json({ message: "Employee registered successfully", user_id: result.insertId });
+    } catch (error) {
+        console.error("Database Error:", error);
+        res.status(500).json({ error: "Database error" });
+    }
+});
+
+// Fetch employee details by QR code
+router.get("/employees/:qr_code", async (req, res) => {
+    const { qr_code } = req.params;
+
+    try {
+        const [employee] = await db.query("SELECT * FROM Users WHERE qr_code = ?", [qr_code]);
+
+        if (employee.length === 0) {
+            return res.status(404).json({ error: "Employee not found" });
+        }
+
+        res.json(employee[0]);
+    } catch (error) {
+        console.error("Database Error:", error);
+        res.status(500).json({ error: "Database error" });
+    }
+});
+
+module.exports = router;  // ✅ Ensure this exports the router

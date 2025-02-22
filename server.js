@@ -2,9 +2,9 @@ require('dotenv').config(); // Load environment variables first
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const usersRouter = require('./user'); 
 const admin = require('./adminRoutes')
 const login = require('./loginRoute')
+const employee = require('./employeeroutes')
 
 const app = express();
 
@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 
-app.use('/api', usersRouter);
+app.use('/api', employee);
 app.use('/admin',admin)
 app.use('/login',login)
 
