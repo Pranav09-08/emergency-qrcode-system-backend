@@ -91,173 +91,31 @@ recordingsRouter.post('/voice/recordings/:userId', upload.single('audio'), async
 
 recordingsRouter.get('/user/:userId', async (req, res) => {
     try {
-        // Join the recordings table with the users table to get the user details
         const userId = req.params.userId;
         const query = `
             SELECT 
-                r.id, 
-                r.filename, 
-                r.path, 
-                r.duration, 
-                r.size, 
-                r.mimeType, 
-                r.createdAt
-            FROM recordings r
-            WHERE r.user_id = ?
-            ORDER BY r.createdAt DESC;
+                id, 
+                filename, 
+                path, 
+                duration, 
+                size, 
+                mimeType, 
+                createdAt,
+                user_id
+            FROM recordings
+            WHERE user_id = ?
+            ORDER BY createdAt DESC;
         `;
 
         const [recordings] = await db.query(query, [userId]);
 
-        const html = `
-        <html>
-            <head>
-                <title>Recordings List</title>
-                <style>
-                    body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f7fa; }
-                    .recording { 
-                        margin-bottom: 30px; 
-                        padding: 20px; 
-                        border: 1px solid #ddd; 
-                        border-radius: 8px;
-                        background: #ffffff;
-                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-                    }
-                    audio {
-                        margin-top: 20px;
-                        width: 100%;
-                        max-width: 600px;
-                        display: block;
-                        border-radius: 8px;
-                        background-color: #f8f9fa;
-                        border: 1px solid #ccc;
-                        padding: 10px;
-                    }
-                    .filename {
-                        color: #333; 
-                        font-weight: bold; 
-                        font-size: 1.2em;
-                        margin-bottom: 10px;
-                    }
-                    .meta { 
-                        color: #666; 
-                        font-size: 0.9em; 
-                        margin-bottom: 15px;
-                    }
-                    .user-details { 
-                        font-size: 0.9em; 
-                        color: #444; 
-                        margin-top: 10px; 
-                        padding-top: 10px;
-                        border-top: 1px solid #ddd;
-                    }
-                    .user-details div { 
-                        margin-bottom: 5px;
-                    }
-                    .user-details strong {
-                        color: #333;
-                    }
-                    .recording:hover {
-                        background-color: #f9f9f9;
-                        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-                    }
-                                .users-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1200px;
-            width: 100%;
-        }
-
-        .user-card {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease;
-            border-left: 4px solid #6c63ff;
-            margin-bottom:20px;
-        }
-
-        .user-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .user-details {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .detail-item {
-            padding: 0.8rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            color: #444;
-        }
-
-        .detail-label {
-            display: block;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 0.3rem;
-            font-size: 0.9rem;
-        }
-
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 0.5rem;
-        }
-
-        .active {
-            background: #28a745;
-        }
-
-        .inactive {
-            background: #dc3545;
-        }
-                </style>
-            </head>
-            <body>
-                <h1>Recordings List (${recordings.length})</h1>
-                ${recordings.map(rec => `
-                    <div class="user-card">
-            <div class="user-details">
-                <div class="detail-item">
-                    <span class="detail-label">Employee Name : </span>
-                    ${rec.full_name}
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Email</span>
-                    ${rec.email}
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Phone</span>
-                    ${rec.phone}
-                </div>
-                <audio controls>
-                            <source src=".${rec.path}" type="${rec.mimeType}">
-                            <source src=".${rec.path}" type="audio/mpeg">
-                            <source src=".${rec.path}" type="audio/webm">
-                            Your browser does not support audio playback
-                        </audio>
-            </div>
-        </div>
-
-                `).join('')}
-            </body>
-        </html>`;
-
-        res.send(html);
+        // Return the recordings as JSON
+        res.json(recordings);
     } catch (error) {
         console.error('Error loading recordings:', error);
-        res.status(500).send('Error loading recordings');
+        res.status(500).json({ message: 'Error loading recordings' });
     }
 });
+
 
 module.exports = recordingsRouter;
