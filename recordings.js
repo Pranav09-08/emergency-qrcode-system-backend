@@ -47,37 +47,24 @@ const upload = multer({
     }
 });
 
-// Create the recordings table if it doesn't exist
-const createTableQuery = `
-CREATE TABLE IF NOT EXISTS recordings (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    filename VARCHAR(255) NOT NULL,
-    path VARCHAR(255) NOT NULL,
-    duration INT NOT NULL,
-    size INT NOT NULL,
-    mimeType VARCHAR(255) NOT NULL,
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    user_id INT,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-`;
 
 db.query(createTableQuery)
     .then(() => console.log("Recordings table is ready"))
     .catch(err => console.error('Table creation error:', err));
 
 // Upload a recording
-recordingsRouter.post('/voice/recordings', upload.single('audio'), async (req, res) => {
+// Change the route to include user_id as a parameter
+recordingsRouter.post('/voice/recordings/:userId', upload.single('audio'), async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ error: 'No audio file uploaded' });
 
         const { filename, path: filePath, size } = req.file;
-        const duration = req.body.duration || 0; // Default to 0 if duration is not provided
+        const duration = req.body.duration || 0;
         const mimeType = mime.lookup(filename) || req.file.mimetype;
-        const userId = 90007;
-        // const userId = req.body.user_id; // Assume user_id is passed in the request body
+        const userId = req.params.userId; // Get user_id from URL parameters
 
-        // Insert the new recording into the MySQL database
+        if (!userId) return res.status(400).json({ error: 'User ID is required' });
+
         const insertQuery = `
             INSERT INTO recordings (filename, path, duration, size, mimeType, user_id)
             VALUES (?, ?, ?, ?, ?, ?);
@@ -102,6 +89,9 @@ recordingsRouter.post('/voice/recordings', upload.single('audio'), async (req, r
         res.status(500).json({ error: error.message || 'Failed to save recording' });
     }
 });
+
+
+
 recordingsRouter.get('/', async (req, res) => {
     try {
         // Join the recordings table with the users table to get the user details
