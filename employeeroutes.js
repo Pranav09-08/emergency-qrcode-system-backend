@@ -43,14 +43,23 @@ router.get("/employees/:qr_code", async (req, res) => {
 });
 
 router.get('/getadmins', (req, res) => {
-    const query = 'SELECT admin_id, full_name, phone FROM admins';
+    const query = 'SELECT admin_id, full_name, phone FROM Admins';
   
     db.query(query, (err, results) => {
         if (err) {
             return res.status(500).json({ error: 'Failed to fetch admins' });
         }
-        res.json(results);
+
+        // Store the results in a variable
+        const adminDetails = results;
+
+        // Log the data to verify the structure
+        console.log(adminDetails);
+
+        // Send the results in the response
+        res.json(adminDetails);
     });
-  });
+});
+
 
 module.exports = router;  // ✅ Ensure this exports the router
