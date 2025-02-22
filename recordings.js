@@ -11,10 +11,11 @@ const recordingsRouter = express.Router();
 
 // Middleware Configuration
 recordingsRouter.use(cors({
-    origin: 'https://emergency-qrcode-system-frontend.vercel.app/', // Frontend URL (adjust if necessary)
+    origin: '*', // Allow all origins
     methods: ['GET', 'POST'],
     allowedHeaders: ['Content-Type']
 }));
+
 
 // Static File Serving with Proper MIME Types
 recordingsRouter.use('/uploads', express.static(path.join(__dirname, 'uploads'), (req, res, next) => {
