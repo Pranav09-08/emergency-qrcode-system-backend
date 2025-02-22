@@ -30,6 +30,17 @@ router.post('/register', async (req, res) => {
   }
 });
 
+router.get('/getadmins', (req, res) => {
+  const query = 'SELECT admin_id, full_name, phone FROM admins';
+
+  db.query(query, (err, results) => {
+      if (err) {
+          return res.status(500).json({ error: 'Failed to fetch admins' });
+      }
+      res.json(results);
+  });
+});
+
 module.exports = router;
 
 
